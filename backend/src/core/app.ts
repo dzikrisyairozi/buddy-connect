@@ -14,12 +14,55 @@ dotenv.config();
 // Initialize Express app
 const app: Application = express();
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
-app.use(morgan('dev')); // Request logging
-app.use(express.json()); // Parse JSON requests
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
+// CORS middleware that adds appropriate headers for all requests
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400');
+
+  // Add explicit handling for OPTIONS requests at middleware level
+  if (req.method === 'OPTIONS') {
+    return res.status(204).send('');
+  }
+
+  next();
+});
+
+// Configure CORS for Express as well (belt and suspenders approach)
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  maxAge: 86400 // 24 hours
+};
+
+// Apply regular CORS middleware after our custom middleware
+app.use(cors(corsOptions));
+
+// Security middleware with appropriate settings for development/CORS
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: { policy: 'unsafe-none' }
+}));
+
+// Other middleware
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Debug middleware to log incoming requests
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[Express] ${req.method} ${req.url}`);
+  // Log headers in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Headers:', req.headers);
+  }
+  next();
+});
 
 // API routes
 app.use('/api/users', userRoutes);
