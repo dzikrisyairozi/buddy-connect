@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../middlewares/authMiddleware';
 import { UserRepository } from '../repository/userCollection';
-import { UpdateUserRequest, UserResponse } from '../entities/user';
+import { UpdateUserRequest, UserResponse, CreateUserRequest } from '../entities/user';
 
 // Initialize the user repository
 const userRepository = new UserRepository();
@@ -22,7 +22,24 @@ export const fetchUserData = async (req: AuthenticatedRequest, res: Response): P
     const userId = req.params.id || req.user.uid;
     
     // Fetch user data from Firestore
-    const userData = await userRepository.getUserById(userId);
+    let userData = await userRepository.getUserById(userId);
+    
+    // If user doesn't exist in Firestore but exists in Firebase Auth, create it
+    if (!userData && userId === req.user.uid) {
+      const newUserData: CreateUserRequest = {
+        email: req.user.email || '',
+        displayName: req.user.name || '',
+        photoURL: req.user.picture || '',
+      };
+      
+      try {
+        userData = await userRepository.createUser(newUserData, userId);
+        
+        console.log(`Created new user document for Firebase Auth user ${userId}`);
+      } catch (createError) {
+        console.error('Error creating user in Firestore:', createError);
+      }
+    }
     
     if (!userData) {
       res.status(404).json({
@@ -65,7 +82,24 @@ export const updateUserData = async (req: AuthenticatedRequest, res: Response): 
     const updateData: UpdateUserRequest = req.body;
     
     // Check if user exists
-    const existingUser = await userRepository.getUserById(userId);
+    let existingUser = await userRepository.getUserById(userId);
+    
+    // If user doesn't exist in Firestore but exists in Firebase Auth, create it first
+    if (!existingUser && userId === req.user.uid) {
+      const newUserData: CreateUserRequest = {
+        email: req.user.email || '',
+        displayName: req.user.name || '',
+        photoURL: req.user.picture || '',
+      };
+      
+      try {
+        existingUser = await userRepository.createUser(newUserData, userId);
+        
+        console.log(`Created new user document for Firebase Auth user ${userId}`);
+      } catch (createError) {
+        console.error('Error creating user in Firestore:', createError);
+      }
+    }
     
     if (!existingUser) {
       res.status(404).json({

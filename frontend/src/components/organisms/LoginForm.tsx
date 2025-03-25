@@ -20,6 +20,7 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
@@ -64,7 +65,11 @@ const LoginForm: React.FC = () => {
         return;
       }
       
-      dispatch(registerUser({ email, password }));
+      dispatch(registerUser({ 
+        email, 
+        password,
+        displayName: displayName.trim() || undefined
+      }));
     } else {
       dispatch(loginUser({ email, password }));
     }
@@ -121,6 +126,18 @@ const LoginForm: React.FC = () => {
               disabled={status === 'loading'}
               required
             />
+            
+            {!isLogin && (
+              <TextField
+                label="Display Name"
+                type="text"
+                fullWidth
+                margin="normal"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                disabled={status === 'loading'}
+              />
+            )}
             
             <TextField
               label="Password"

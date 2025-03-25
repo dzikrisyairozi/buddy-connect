@@ -14,13 +14,14 @@ interface UpdateButtonProps {
 }
 
 const UpdateButton: React.FC<UpdateButtonProps> = ({
-  userId = 'me',
+  userId,
   variant = 'contained',
   color = 'primary',
   size = 'medium',
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.user);
+  const { currentUser: authUser } = useSelector((state: RootState) => state.auth);
   const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
@@ -28,7 +29,15 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
   }, []);
 
   const handleFetchUser = () => {
-    dispatch(fetchUserData(userId));
+    // If a specific userId is provided, use it
+    // Otherwise default to the current authenticated user's ID
+    if (userId) {
+      dispatch(fetchUserData(userId));
+    } else if (authUser && authUser.uid) {
+      dispatch(fetchUserData(authUser.uid));
+    } else {
+      console.error('No user ID available for fetch');
+    }
   };
 
   // Prevent hydration errors by only rendering on the client side

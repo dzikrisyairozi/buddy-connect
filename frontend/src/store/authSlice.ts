@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
   signOut,
   User as FirebaseUser,
   UserCredential
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
+import { registerUser as apiRegisterUser, deleteUser as apiDeleteUser } from '../apis/user';
 
 // Define a serializable user type
 export interface SerializableUser {
@@ -64,9 +64,18 @@ export const loginUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+  async ({ email, password, displayName = '' }: { email: string; password: string; displayName?: string }, { rejectWithValue }) => {
     try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Use our backend API to register the user - this creates both Firebase Auth and Firestore records
+      const response = await apiRegisterUser(email, password, displayName);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Registration failed');
+      }
+      
+      // Log in the user after successful registration
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
       return extractSerializableUser(userCredential.user);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
@@ -87,6 +96,26 @@ export const logoutUser = createAsyncThunk(
       const errorMessage = error instanceof Error 
         ? error.message 
         : 'Failed to logout';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const deleteAccount = createAsyncThunk(
+  'auth/deleteAccount',
+  async (_, { rejectWithValue }) => {
+    try {
+      // First delete the user via our API endpoint (handles both Firestore and Firebase Auth)
+      await apiDeleteUser();
+      
+      // Then sign out locally
+      await signOut(auth);
+      
+      return null;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete account';
       return rejectWithValue(errorMessage);
     }
   }
@@ -146,6 +175,20 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      })
+      // Delete account
+      .addCase(deleteAccount.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteAccount.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.currentUser = null;
+        state.isAuthenticated = false;
+        state.error = null;
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       });

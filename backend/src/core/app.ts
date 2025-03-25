@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 
 // Import routes
 import userRoutes from '../routes/userRoutes';
+import authRoutes from '../routes/authRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 
 // API routes
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {

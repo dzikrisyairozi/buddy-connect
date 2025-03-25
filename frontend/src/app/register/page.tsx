@@ -15,22 +15,30 @@ import {
   Link as MuiLink
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../store/authSlice';
+import { registerUser } from '../../store/authSlice';
 import { AppDispatch, RootState } from '../../store/store';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const LoginContent = () => {
+export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const { status, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -51,18 +59,34 @@ const LoginContent = () => {
     return isValid;
   };
 
+  const validateConfirmPassword = (password: string, confirmPassword: string): boolean => {
+    const isValid = password === confirmPassword;
+    setConfirmPasswordError(isValid ? '' : 'Passwords do not match');
+    return isValid;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     const isEmailValid = validateEmail(email);
     const isPasswordValid = validatePassword(password);
+    const isConfirmPasswordValid = validateConfirmPassword(password, confirmPassword);
     
-    if (!isEmailValid || !isPasswordValid) {
+    if (!isEmailValid || !isPasswordValid || !isConfirmPasswordValid) {
       return;
     }
     
-    dispatch(loginUser({ email, password }));
+    dispatch(registerUser({ 
+      email, 
+      password,
+      displayName: displayName.trim() || undefined
+    }));
   };
+
+  // Prevent hydration errors by only rendering on the client side
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Grid 
@@ -86,7 +110,7 @@ const LoginContent = () => {
               gutterBottom
               sx={{ fontWeight: 'bold', mb: 3 }}
             >
-              Sign In
+              Create Account
             </Typography>
             
             {error && (
@@ -110,6 +134,16 @@ const LoginContent = () => {
             />
             
             <TextField
+              label="Display Name"
+              type="text"
+              fullWidth
+              margin="normal"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              disabled={status === 'loading'}
+            />
+            
+            <TextField
               label="Password"
               type="password"
               fullWidth
@@ -119,6 +153,20 @@ const LoginContent = () => {
               onBlur={() => validatePassword(password)}
               error={!!passwordError}
               helperText={passwordError}
+              disabled={status === 'loading'}
+              required
+            />
+            
+            <TextField
+              label="Confirm Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              onBlur={() => validateConfirmPassword(password, confirmPassword)}
+              error={!!confirmPasswordError}
+              helperText={confirmPasswordError}
               disabled={status === 'loading'}
               required
             />
@@ -134,16 +182,16 @@ const LoginContent = () => {
               {status === 'loading' ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                'Create Account'
               )}
             </Button>
             
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Typography variant="body2">
-                Don&apos;t have an account?
-                <Link href="/register" passHref>
+                Already have an account?
+                <Link href="/login" passHref>
                   <MuiLink component="span" sx={{ ml: 1, cursor: 'pointer' }}>
-                    Sign Up
+                    Sign In
                   </MuiLink>
                 </Link>
               </Typography>
@@ -153,19 +201,4 @@ const LoginContent = () => {
       </Grid>
     </Grid>
   );
-};
-
-export default function LoginPage() {
-  const [isMounted, setIsMounted] = useState(false);
-  
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Prevent hydration errors by only rendering on the client side
-  if (!isMounted) {
-    return null;
-  }
-
-  return <LoginContent />;
 } 

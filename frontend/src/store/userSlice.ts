@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { getUserData, updateUserData } from '../apis/user';
+import { logoutUser } from './authSlice';
 
 export interface User {
   id: string;
@@ -96,6 +97,11 @@ const userSlice = createSlice({
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.currentUser = null;
+        state.status = 'idle';
+        state.error = null;
       });
   },
 });

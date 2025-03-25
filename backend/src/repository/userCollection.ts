@@ -52,9 +52,10 @@ export class UserRepository {
   /**
    * Create a new user
    * @param userData User data to create
+   * @param customId Optional custom ID for the document
    * @returns Created user data
    */
-  async createUser(userData: CreateUserRequest): Promise<User> {
+  async createUser(userData: CreateUserRequest, customId?: string): Promise<User> {
     try {
       const now = new Date();
       
@@ -64,11 +65,22 @@ export class UserRepository {
         updatedAt: now
       };
       
-      const docRef = await usersCollection.add(newUser);
+      let docRef;
+      
+      if (customId) {
+        // Use the provided custom ID
+        await usersCollection.doc(customId).set(newUser);
+        docRef = usersCollection.doc(customId);
+      } else {
+        // Let Firestore generate an auto ID
+        docRef = await usersCollection.add(newUser);
+      }
+      
+      const newDoc = await docRef.get();
       
       return {
-        id: docRef.id,
-        ...newUser
+        id: newDoc.id,
+        ...newDoc.data()
       } as User;
     } catch (error) {
       console.error('Error creating user:', error);

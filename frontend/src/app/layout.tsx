@@ -24,16 +24,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning>
-        {isMounted ? (
-          <Providers>
+        <Providers>
+          {isMounted ? (
             <ThemeProvider theme={theme}>
               <CssBaseline />
               {children}
             </ThemeProvider>
-          </Providers>
-        ) : (
-          <div style={{ visibility: 'hidden' }}>{children}</div>
-        )}
+          ) : (
+            <div style={{ visibility: 'hidden' }}>{children}</div>
+          )}
+        </Providers>
       </body>
     </html>
   );
