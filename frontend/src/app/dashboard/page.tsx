@@ -3,17 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
-import { Box, AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { RootState } from '../../store/store';
 import UserProfile from '../../components/organisms/UserProfile';
-import { useDispatch } from 'react-redux';
-import { logoutUser } from '../../store/authSlice';
-import { AppDispatch } from '../../store/store';
+import Navbar from '../../components/organisms/Navbar';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated, currentUser } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
@@ -21,14 +18,10 @@ export default function DashboardPage() {
   }, []);
   
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isMounted && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
-  };
+  }, [isAuthenticated, router, isMounted]);
 
   // Prevent hydration errors by only rendering on the client side
   if (!isMounted) {
@@ -37,19 +30,7 @@ export default function DashboardPage() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Buddy Connect
-          </Typography>
-          <Typography variant="body1" sx={{ mr: 2 }}>
-            {currentUser?.email}
-          </Typography>
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      <Navbar />
       
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         <UserProfile />

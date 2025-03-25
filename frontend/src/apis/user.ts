@@ -32,13 +32,17 @@ export const updateUserData = async (userId: string = 'me', userData: Partial<Us
   return api.put<{ success: boolean; data: User; message: string }>(`/users/${userId}`, userData);
 };
 
-export const registerUser = async (email: string, password: string) => {
-  // This would typically be handled by Firebase Auth directly in the client
-  // but you could also have a custom endpoint
+export const registerUser = async (email: string, password: string, displayName?: string, photoURL?: string) => {
   return api.post<{ success: boolean; data: User; message: string }>('/auth/register', {
     email,
     password,
+    displayName,
+    photoURL
   });
+};
+
+export const deleteUser = async (userId: string = 'me') => {
+  return api.delete<{ success: boolean; message: string }>(`/auth/users/${userId}`);
 };
 
 // For testing with Firebase Emulator
