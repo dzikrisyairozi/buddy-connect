@@ -8,8 +8,19 @@ import {
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
+// Define a serializable user type
+export interface SerializableUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  emailVerified: boolean;
+  phoneNumber: string | null;
+  isAnonymous: boolean;
+}
+
 export interface AuthState {
-  currentUser: FirebaseUser | null;
+  currentUser: SerializableUser | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   isAuthenticated: boolean;
@@ -22,12 +33,26 @@ const initialState: AuthState = {
   isAuthenticated: false,
 };
 
+// Helper function to extract serializable fields from Firebase User
+const extractSerializableUser = (user: FirebaseUser | null): SerializableUser | null => {
+  if (!user) return null;
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+    phoneNumber: user.phoneNumber,
+    isAnonymous: user.isAnonymous,
+  };
+};
+
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      return extractSerializableUser(userCredential.user);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -42,7 +67,7 @@ export const registerUser = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      return extractSerializableUser(userCredential.user);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -72,7 +97,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<FirebaseUser | null>) => {
-      state.currentUser = action.payload;
+      state.currentUser = extractSerializableUser(action.payload);
       state.isAuthenticated = action.payload !== null;
     },
   },
@@ -86,7 +111,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.currentUser = action.payload;
-        state.isAuthenticated = true;
+        state.isAuthenticated = action.payload !== null;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -102,7 +127,7 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.currentUser = action.payload;
-        state.isAuthenticated = true;
+        state.isAuthenticated = action.payload !== null;
         state.error = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
