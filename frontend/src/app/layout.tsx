@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Inter } from 'next/font/google';
 import theme from '../theme';
 import { Providers } from '../store/Providers';
+import { setupEmulators } from '../utils/emulatorSetup';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +20,9 @@ export default function RootLayout({
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Setup Firebase emulators if enabled
+    setupEmulators();
   }, []);
 
   return (
