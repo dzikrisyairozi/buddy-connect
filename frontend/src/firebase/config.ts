@@ -24,6 +24,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // Initialize Analytics only on client side
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
 export default app; 
