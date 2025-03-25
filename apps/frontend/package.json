@@ -9,9 +9,11 @@
     "start": "next start",
     "test:emulator": "cross-env NEXT_PUBLIC_USE_EMULATOR=true node scripts/test-emulator.js",
     "emulator:all": "node scripts/start-dev-emulator.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rd /s /q .next 2>nul || true && rd /s /q node_modules 2>nul || true"
   },
   "dependencies": {
+    "@buddy-connect/shared": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.8",

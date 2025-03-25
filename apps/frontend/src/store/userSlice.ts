@@ -1,29 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { getUserData, updateUserData } from '../apis/user';
 import { logoutUser } from './authSlice';
-
-export interface User {
-  id: string;
-  email: string;
-  displayName?: string;
-  photoURL?: string;
-  phoneNumber?: string;
-  bio?: string;
-  location?: string;
-  preferences?: {
-    theme?: 'light' | 'dark';
-    notifications?: boolean;
-    [key: string]: unknown;
-  };
-  createdAt?: string | number | Date;
-  updatedAt?: string | number | Date;
-}
-
-export interface UserState {
-  currentUser: User | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
-}
+import { User, UserState } from '@buddy-connect/shared';
 
 const initialState: UserState = {
   currentUser: null,
