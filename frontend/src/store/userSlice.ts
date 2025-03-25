@@ -15,6 +15,8 @@ export interface User {
     notifications?: boolean;
     [key: string]: unknown;
   };
+  createdAt?: string | number | Date;
+  updatedAt?: string | number | Date;
 }
 
 export interface UserState {
@@ -48,6 +50,11 @@ export const updateUser = createAsyncThunk(
   'user/updateUser',
   async ({ userId, userData }: { userId: string; userData: Partial<User> }, { rejectWithValue }) => {
     try {
+      // Ensure photoURL is handled correctly
+      if ('photoURL' in userData && userData.photoURL === undefined) {
+        userData.photoURL = '';
+      }
+      
       const response = await updateUserData(userId, userData);
       return response.data.data;
     } catch (error: unknown) {
@@ -69,6 +76,14 @@ const userSlice = createSlice({
     clearUser: (state) => {
       state.currentUser = null;
     },
+    updateUserField: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.currentUser) {
+        state.currentUser = {
+          ...state.currentUser,
+          ...action.payload
+        };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -79,7 +94,14 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserData.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.currentUser = action.payload;
+        
+        // Make sure photoURL exists, even as empty string
+        const user = action.payload;
+        if (user && !('photoURL' in user)) {
+          user.photoURL = '';
+        }
+        
+        state.currentUser = user;
       })
       .addCase(fetchUserData.rejected, (state, action) => {
         state.status = 'failed';
@@ -92,12 +114,20 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.currentUser = action.payload;
+        
+        // Make sure photoURL exists, even as empty string
+        const user = action.payload;
+        if (user && !('photoURL' in user)) {
+          user.photoURL = '';
+        }
+        
+        state.currentUser = user;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string;
       })
+      // Clear user state when user logs out
       .addCase(logoutUser.fulfilled, (state) => {
         state.currentUser = null;
         state.status = 'idle';
@@ -106,5 +136,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, updateUserField } = userSlice.actions;
 export default userSlice.reducer; 

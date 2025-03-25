@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Button, CircularProgress, Typography, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserData } from '../../store/userSlice';
@@ -11,6 +11,9 @@ interface UpdateButtonProps {
   variant?: 'text' | 'outlined' | 'contained';
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   size?: 'small' | 'medium' | 'large';
+  startIcon?: ReactNode;
+  label?: string;
+  showSuccessMessage?: boolean;
 }
 
 const UpdateButton: React.FC<UpdateButtonProps> = ({
@@ -18,6 +21,9 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
   variant = 'contained',
   color = 'primary',
   size = 'medium',
+  startIcon,
+  label = 'Fetch User Data',
+  showSuccessMessage = true,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.user);
@@ -53,12 +59,15 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
         size={size}
         onClick={handleFetchUser}
         disabled={status === 'loading'}
-        startIcon={status === 'loading' ? <CircularProgress size={20} color="inherit" /> : null}
+        startIcon={status === 'loading' 
+          ? <CircularProgress size={20} color="inherit" /> 
+          : startIcon
+        }
       >
-        {status === 'loading' ? 'Loading...' : 'Fetch User Data'}
+        {status === 'loading' ? 'Loading...' : label}
       </Button>
       
-      {status === 'succeeded' && (
+      {showSuccessMessage && status === 'succeeded' && (
         <Typography color="success.main" sx={{ mt: 1 }}>
           User data fetched successfully!
         </Typography>

@@ -1,5 +1,6 @@
 import { db } from '../config/firebaseConfig';
 import { User, CreateUserRequest, UpdateUserRequest } from '../entities/user';
+import * as admin from 'firebase-admin';
 
 const COLLECTION_NAME = 'USERS';
 const usersCollection = db.collection(COLLECTION_NAME);
@@ -59,8 +60,10 @@ export class UserRepository {
     try {
       const now = new Date();
       
+      // Ensure photoURL is never undefined to prevent hydration issues
       const newUser = {
         ...userData,
+        photoURL: userData.photoURL || '',
         createdAt: now,
         updatedAt: now
       };
@@ -96,12 +99,24 @@ export class UserRepository {
    */
   async updateUser(userId: string, userData: UpdateUserRequest): Promise<User> {
     try {
-      const now = new Date();
+      const now = admin.firestore.Timestamp.now();
       
+      // Process update data to ensure consistent format
       const updateData = {
         ...userData,
         updatedAt: now
       };
+      
+      // Explicitly ensure photoURL is present even if it's empty string
+      if ('photoURL' in updateData && updateData.photoURL === undefined) {
+        updateData.photoURL = '';
+      }
+      
+      // Log the processed update data
+      console.log('Updating user document with:', {
+        userId,
+        updateData
+      });
       
       await usersCollection.doc(userId).update(updateData);
       

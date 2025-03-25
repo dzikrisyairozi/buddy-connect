@@ -81,6 +81,16 @@ export const updateUserData = async (req: AuthenticatedRequest, res: Response): 
     const userId = req.params.id || req.user.uid;
     const updateData: UpdateUserRequest = req.body;
     
+    // Log the update request for debugging
+    console.log('Update user request:', {
+      userId,
+      updateData,
+      reqUser: {
+        uid: req.user.uid,
+        email: req.user.email
+      }
+    });
+    
     // Check if user exists
     let existingUser = await userRepository.getUserById(userId);
     
@@ -105,6 +115,21 @@ export const updateUserData = async (req: AuthenticatedRequest, res: Response): 
       res.status(404).json({
         success: false,
         message: `User with ID ${userId} not found`
+      } as UserResponse);
+      return;
+    }
+
+    // Handle explicit null/empty values for photoURL
+    // If photoURL is undefined in the request but the key is present, set it to null/empty string
+    if ('photoURL' in updateData && !updateData.photoURL) {
+      updateData.photoURL = '';
+    }
+
+    // Allow administrative updates only for admins or the user updating their own data
+    if (userId !== req.user.uid && req.user.role !== 'admin') {
+      res.status(403).json({
+        success: false,
+        message: 'Forbidden: You can only update your own account'
       } as UserResponse);
       return;
     }
