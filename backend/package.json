@@ -1,8 +1,8 @@
 {
   "name": "buddy-connect-backend",
   "version": "1.0.0",
-  "description": "Backend server for Buddy Connect application",
-  "main": "src/server.js",
+  "description": "Backend server for Buddy Connect application with Firebase",
+  "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -13,6 +13,8 @@
     "express",
     "api",
     "backend",
+    "firebase",
+    "firestore",
     "buddy-connect"
   ],
   "author": "",
@@ -21,8 +23,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "firebase-admin": "^11.5.0",
     "helmet": "^6.0.1",
-    "mongoose": "^7.0.3",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
