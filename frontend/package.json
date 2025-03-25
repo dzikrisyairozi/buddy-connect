@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:emulator": "cross-env NEXT_PUBLIC_USE_EMULATOR=true next dev",
     "build": "next build",
     "start": "next start",
+    "test:emulator": "cross-env NEXT_PUBLIC_USE_EMULATOR=true node scripts/test-emulator.js",
+    "emulator:all": "node scripts/start-dev-emulator.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -27,6 +30,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "tailwindcss": "^4",

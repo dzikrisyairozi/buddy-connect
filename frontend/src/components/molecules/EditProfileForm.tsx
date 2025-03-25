@@ -77,7 +77,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
       fullWidth
     >
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6">Edit Profile</Typography>
+        <Typography className='text-2xl font-bold'>Edit Profile</Typography>
         <IconButton onClick={onClose} disabled={status === 'loading'}>
           <X size={18} />
         </IconButton>
