@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import './globals.css';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,15 +15,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </Providers>
+      <body className={inter.className} suppressHydrationWarning>
+        {isMounted ? (
+          <Providers>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              {children}
+            </ThemeProvider>
+          </Providers>
+        ) : (
+          <div style={{ visibility: 'hidden' }}>{children}</div>
+        )}
       </body>
     </html>
   );
