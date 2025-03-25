@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Button, CircularProgress, Typography, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserData } from '../../store/userSlice';
@@ -19,10 +21,20 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.user);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleFetchUser = () => {
     dispatch(fetchUserData(userId));
   };
+
+  // Prevent hydration errors by only rendering on the client side
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Box>

@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -18,6 +20,16 @@ const UserProfile: React.FC = () => {
   const { currentUser } = useSelector((state: RootState) => state.user);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Prevent hydration errors by only rendering on the client side
+  if (!isMounted) {
+    return null;
+  }
 
   if (!currentUser) {
     return (

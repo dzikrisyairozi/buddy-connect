@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { Box, AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
@@ -14,6 +14,11 @@ export default function DashboardPage() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, currentUser } = useSelector((state: RootState) => state.auth);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,6 +29,11 @@ export default function DashboardPage() {
   const handleLogout = () => {
     dispatch(logoutUser());
   };
+
+  // Prevent hydration errors by only rendering on the client side
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Box sx={{ flexGrow: 1 }}>
