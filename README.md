@@ -10,8 +10,9 @@ This Turborepo includes the following packages/apps:
 
 - `frontend`: a [Next.js](https://nextjs.org/) app for the Buddy Connect web client
 - `backend`: a Firebase Functions backend with Express.js for the Buddy Connect API
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+- `@buddy-connect/shared`: shared functions
+- `@buddy-connect/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@buddy-connect/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
@@ -40,6 +41,7 @@ pnpm dev
 ```
 
 This will start:
+
 - Frontend on http://localhost:3000
 - Backend on http://localhost:5000
 
