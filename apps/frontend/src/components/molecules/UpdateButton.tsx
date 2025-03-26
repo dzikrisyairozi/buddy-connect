@@ -23,7 +23,7 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
   size = "medium",
   startIcon,
   label = "Fetch User Data",
-  showSuccessMessage = true,
+  showSuccessMessage = false,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.user);
@@ -78,7 +78,7 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
         </Typography>
       )}
 
-      {status === "failed" && (
+      {status === "failed" && error && (
         <Typography color="error" sx={{ mt: 1 }}>
           Error: {error}
         </Typography>

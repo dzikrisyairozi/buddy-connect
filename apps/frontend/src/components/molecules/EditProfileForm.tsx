@@ -7,7 +7,6 @@ import {
   TextField,
   Typography,
   CircularProgress,
-  Alert,
   Avatar,
   Dialog,
   DialogTitle,
@@ -104,18 +103,6 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ open, onClose }) => {
             alignItems: "center",
           }}
         >
-          {error && (
-            <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
-              {error}
-            </Alert>
-          )}
-
-          {status === "succeeded" && (
-            <Alert severity="success" sx={{ mb: 2, width: "100%" }}>
-              Profile updated successfully!
-            </Alert>
-          )}
-
           <Avatar
             src={previewURL || undefined}
             alt={displayName || "User"}

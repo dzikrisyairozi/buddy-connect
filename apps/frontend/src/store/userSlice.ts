@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { getUserData, updateUserData } from "../apis/user";
 import { logoutUser } from "./authSlice";
 import { User, UserState } from "@buddy-connect/shared";
+import { toast } from "sonner";
 
 const initialState: UserState = {
   currentUser: null,
@@ -14,10 +15,12 @@ export const fetchUserData = createAsyncThunk(
   async (userId: string, { rejectWithValue }) => {
     try {
       const response = await getUserData(userId);
+      toast.success("User data fetched successfully");
       return response.data.data;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to fetch user data";
+      toast.error(`Failed to fetch user data: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },
@@ -36,10 +39,12 @@ export const updateUser = createAsyncThunk(
       }
 
       const response = await updateUserData(userId, userData);
+      toast.success("Profile updated successfully");
       return response.data.data;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to update user data";
+      toast.error(`Failed to update profile: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },

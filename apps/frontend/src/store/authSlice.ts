@@ -10,6 +10,8 @@ import {
   registerUser as apiRegisterUser,
   deleteUser as apiDeleteUser,
 } from "../apis/user";
+import { toast } from "sonner";
+import { clearUser } from "./userSlice";
 
 // Define a serializable user type
 export interface SerializableUser {
@@ -64,10 +66,14 @@ export const loginUser = createAsyncThunk(
         email,
         password,
       );
+      toast.success(
+        `Welcome back, ${userCredential.user.displayName || userCredential.user.email}!`,
+      );
       return extractSerializableUser(userCredential.user);
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to login";
+        error instanceof Error ? error.message : "Invalid email or password";
+      toast.error(`Login failed: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },
@@ -98,10 +104,12 @@ export const registerUser = createAsyncThunk(
         password,
       );
 
+      toast.success("Account created successfully! Welcome to Buddy Connect.");
       return extractSerializableUser(userCredential.user);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to register";
+      toast.error(`Registration failed: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },
@@ -109,13 +117,16 @@ export const registerUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       await signOut(auth);
+      dispatch(clearUser());
+      toast.success("Logged out successfully");
       return null;
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to logout";
+        error instanceof Error ? error.message : "Failed to log out";
+      toast.error(`Logout failed: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },
@@ -123,7 +134,7 @@ export const logoutUser = createAsyncThunk(
 
 export const deleteAccount = createAsyncThunk(
   "auth/deleteAccount",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
       // First delete the user via our API endpoint (handles both Firestore and Firebase Auth)
       await apiDeleteUser();
@@ -131,10 +142,13 @@ export const deleteAccount = createAsyncThunk(
       // Then sign out locally
       await signOut(auth);
 
+      dispatch(clearUser());
+      toast.success("Account deleted successfully");
       return null;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to delete account";
+      toast.error(`Account deletion failed: ${errorMessage}`);
       return rejectWithValue(errorMessage);
     }
   },
@@ -147,6 +161,7 @@ const authSlice = createSlice({
     setUser: (state, action: PayloadAction<FirebaseUser | null>) => {
       state.currentUser = extractSerializableUser(action.payload);
       state.isAuthenticated = action.payload !== null;
+      state.status = "succeeded";
     },
   },
   extraReducers: (builder) => {
@@ -188,7 +203,7 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.status = "idle";
         state.currentUser = null;
         state.isAuthenticated = false;
         state.error = null;
@@ -202,7 +217,7 @@ const authSlice = createSlice({
         state.status = "loading";
       })
       .addCase(deleteAccount.fulfilled, (state) => {
-        state.status = "succeeded";
+        state.status = "idle";
         state.currentUser = null;
         state.isAuthenticated = false;
         state.error = null;

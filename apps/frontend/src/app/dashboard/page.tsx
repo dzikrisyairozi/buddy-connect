@@ -33,6 +33,13 @@ export default function DashboardPage() {
       <Navbar />
 
       <Container maxWidth="lg" sx={{ mt: 4 }}>
+        {/* <Typography variant="h4" component="h1" gutterBottom>
+          Dashboard
+        </Typography>
+        <Divider sx={{ mb: 4 }} />
+        
+        <ToastExample /> */}
+
         <UserProfile />
       </Container>
     </Box>
