@@ -50,6 +50,7 @@ export interface UserResponse {
   success: boolean;
   data?: User;
   message?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error?: any;
 }
 

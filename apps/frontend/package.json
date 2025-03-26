@@ -9,7 +9,7 @@
     "start": "next start",
     "test:emulator": "cross-env NEXT_PUBLIC_USE_EMULATOR=true node scripts/test-emulator.js",
     "emulator:all": "node scripts/start-dev-emulator.js",
-    "lint": "next lint",
+    "lint": "eslint \"./**/*.{js,jsx,ts,tsx}\"",
     "clean": "rd /s /q .next 2>nul || true && rd /s /q node_modules 2>nul || true"
   },
   "dependencies": {

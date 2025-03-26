@@ -27,6 +27,11 @@ export const config = [
     },
   },
   {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
     ignores: ["dist/**"],
   },
 ];
