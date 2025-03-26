@@ -9,6 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import createEmotionCache from "../utils/createEmotionCache";
 import theme from "../theme";
 import "./globals.css";
+import { Toaster } from "../components/ui/Toaster";
 
 // Client-side cache, shared for the whole session of the user
 const clientSideEmotionCache = createEmotionCache();
@@ -36,6 +37,7 @@ export default function RootLayout({
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <FirebaseAuthListener />
+              <Toaster />
               <AnimatePresence mode="wait">{children}</AnimatePresence>
             </ThemeProvider>
           </StoreProvider>
