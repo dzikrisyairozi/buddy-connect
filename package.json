@@ -34,7 +34,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "framer-motion": "^12.6.0"
+    "framer-motion": "^12.6.0",
+    "sonner": "^2.0.1"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
