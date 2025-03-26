@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit';
-import userReducer from './userSlice';
-import authReducer from './authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
+import authReducer from "./authSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,14 +11,14 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [
-          'auth/setUser', 
-          'auth/loginUser/fulfilled', 
-          'auth/registerUser/fulfilled'
+          "auth/setUser",
+          "auth/loginUser/fulfilled",
+          "auth/registerUser/fulfilled",
         ],
-        ignoredPaths: ['auth.currentUser'],
+        ignoredPaths: ["auth.currentUser"],
       },
     }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch; 
+export type AppDispatch = typeof store.dispatch;

@@ -47,3 +47,7 @@ export const nextJsConfig = [
     },
   },
 ];
+
+// Export both as default and named export for compatibility
+export const config = nextJsConfig;
+export default nextJsConfig;

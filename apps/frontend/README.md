@@ -68,6 +68,7 @@ npm run emulator:all
 ```
 
 This script will:
+
 1. Build the backend TypeScript code
 2. Start the Firebase emulators
 3. Start the frontend with emulator configuration

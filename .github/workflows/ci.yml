@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: Lint and Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,11 +41,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: pnpm lint
+      - name: Run Lint
+        run: pnpm run lint
+
+      - name: Type Check
+        run: pnpm run type:check
 
   format:
-    name: Format
+    name: Format Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +82,7 @@ jobs:
         run: pnpm install
 
       - name: Check formatting
-        run: npx prettier --check "**/*.{ts,tsx,md,json}"
+        run: pnpm run format:check
 
   build:
     name: Build
