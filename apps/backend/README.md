@@ -71,6 +71,7 @@ buddy-connect/backend/
 - `PUT /api/users/:id`: Update user data by ID
 
 ### Health Check
+
 - `GET /health`: Check API status
 
 ## Authentication
@@ -89,4 +90,4 @@ This API uses Firebase Authentication. To access protected endpoints:
 
 ## License
 
-ISC 
+ISC

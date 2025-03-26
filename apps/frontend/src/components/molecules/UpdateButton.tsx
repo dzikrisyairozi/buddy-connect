@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, ReactNode } from 'react';
-import { Button, CircularProgress, Typography, Box } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserData } from '../../store/userSlice';
-import { RootState, AppDispatch } from '../../store/store';
+import React, { useState, useEffect, ReactNode } from "react";
+import { Button, CircularProgress, Typography, Box } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserData } from "../../store/userSlice";
+import { RootState, AppDispatch } from "../../store/store";
 
 interface UpdateButtonProps {
   userId?: string;
-  variant?: 'text' | 'outlined' | 'contained';
-  color?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "text" | "outlined" | "contained";
+  color?: "primary" | "secondary" | "success" | "error" | "info" | "warning";
+  size?: "small" | "medium" | "large";
   startIcon?: ReactNode;
   label?: string;
   showSuccessMessage?: boolean;
@@ -18,18 +18,20 @@ interface UpdateButtonProps {
 
 const UpdateButton: React.FC<UpdateButtonProps> = ({
   userId,
-  variant = 'contained',
-  color = 'primary',
-  size = 'medium',
+  variant = "contained",
+  color = "primary",
+  size = "medium",
   startIcon,
-  label = 'Fetch User Data',
+  label = "Fetch User Data",
   showSuccessMessage = true,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.user);
-  const { currentUser: authUser } = useSelector((state: RootState) => state.auth);
+  const { currentUser: authUser } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const [isMounted, setIsMounted] = useState(false);
-  
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -42,7 +44,7 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
     } else if (authUser && authUser.uid) {
       dispatch(fetchUserData(authUser.uid));
     } else {
-      console.error('No user ID available for fetch');
+      console.error("No user ID available for fetch");
     }
   };
 
@@ -58,22 +60,25 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
         color={color}
         size={size}
         onClick={handleFetchUser}
-        disabled={status === 'loading'}
-        startIcon={status === 'loading' 
-          ? <CircularProgress size={20} color="inherit" /> 
-          : startIcon
+        disabled={status === "loading"}
+        startIcon={
+          status === "loading" ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            startIcon
+          )
         }
       >
-        {status === 'loading' ? 'Loading...' : label}
+        {status === "loading" ? "Loading..." : label}
       </Button>
-      
-      {showSuccessMessage && status === 'succeeded' && (
+
+      {showSuccessMessage && status === "succeeded" && (
         <Typography color="success.main" sx={{ mt: 1 }}>
           User data fetched successfully!
         </Typography>
       )}
-      
-      {status === 'failed' && (
+
+      {status === "failed" && (
         <Typography color="error" sx={{ mt: 1 }}>
           Error: {error}
         </Typography>
@@ -82,4 +87,4 @@ const UpdateButton: React.FC<UpdateButtonProps> = ({
   );
 };
 
-export default UpdateButton; 
+export default UpdateButton;

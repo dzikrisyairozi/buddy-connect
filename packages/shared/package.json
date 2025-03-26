@@ -13,10 +13,11 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@buddy-connect/eslint-config": "workspace:*",
     "@types/node": "^20.10.6",
-    "eslint": "^8.56.0",
+    "eslint": "^9.22.0",
     "rimraf": "^5.0.1",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
   }
-} 
+}

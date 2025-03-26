@@ -8,7 +8,7 @@ export interface User {
   bio?: string;
   location?: string;
   preferences?: {
-    theme?: 'light' | 'dark';
+    theme?: "light" | "dark";
     notifications?: boolean;
     [key: string]: unknown;
   };
@@ -25,7 +25,7 @@ export interface CreateUserRequest {
   bio?: string;
   location?: string;
   preferences?: {
-    theme?: 'light' | 'dark';
+    theme?: "light" | "dark";
     notifications?: boolean;
     [key: string]: unknown;
   };
@@ -39,7 +39,7 @@ export interface UpdateUserRequest {
   bio?: string;
   location?: string;
   preferences?: {
-    theme?: 'light' | 'dark';
+    theme?: "light" | "dark";
     notifications?: boolean;
     [key: string]: unknown;
   };
@@ -56,6 +56,6 @@ export interface UserResponse {
 // User state interface for frontend
 export interface UserState {
   currentUser: User | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
-} 
+}
