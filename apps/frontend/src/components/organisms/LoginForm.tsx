@@ -10,13 +10,44 @@ import {
   Alert,
   useMediaQuery,
   useTheme,
+  InputAdornment,
+  IconButton,
+  Divider,
 } from "@mui/material";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Mail, Lock, UserRound } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, registerUser } from "../../store/authSlice";
 import { AppDispatch, RootState } from "../../store/store";
 
-const LoginForm: React.FC = () => {
-  const [isLogin, setIsLogin] = useState(true);
+const MotionPaper = motion(Paper);
+const MotionTextField = motion(TextField);
+const MotionButton = motion(Button);
+const MotionTypography = motion(Typography);
+
+const formVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+interface LoginFormProps {
+  isRegisterMode?: boolean;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ isRegisterMode = false }) => {
+  const [isLogin, setIsLogin] = useState(!isRegisterMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,6 +55,8 @@ const LoginForm: React.FC = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const { status, error } = useSelector((state: RootState) => state.auth);
@@ -90,42 +123,69 @@ const LoginForm: React.FC = () => {
     setConfirmPasswordError("");
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <Grid
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ minHeight: "100vh", padding: 2 }}
+      sx={{
+        minHeight: "100vh",
+        padding: 2,
+        background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.dark} 100%)`,
+      }}
     >
       <Grid item xs={12} sm={8} md={6} lg={4}>
-        <Paper
-          elevation={3}
+        <MotionPaper
+          elevation={6}
           sx={{
-            padding: isMobile ? 2 : 4,
-            borderRadius: 2,
+            padding: isMobile ? 3 : 4,
+            borderRadius: 3,
+            overflow: "hidden",
+            position: "relative",
           }}
+          initial="hidden"
+          animate="visible"
+          variants={formVariants}
         >
-          <Box component="form" onSubmit={handleSubmit}>
-            <Typography
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            <MotionTypography
               variant="h4"
               align="center"
               gutterBottom
               sx={{ fontWeight: "bold", mb: 3 }}
+              variants={itemVariants}
             >
-              {isLogin ? "Sign In" : "Create Account"}
-            </Typography>
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </MotionTypography>
 
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
-                {error}
-              </Alert>
+              <motion.div variants={itemVariants}>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
+              </motion.div>
             )}
 
-            <TextField
+            <MotionTextField
               label="Email"
               type="email"
               fullWidth
-              margin="normal"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => validateEmail(email)}
@@ -133,25 +193,39 @@ const LoginForm: React.FC = () => {
               helperText={emailError}
               disabled={status === "loading"}
               required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Mail size={18} />
+                  </InputAdornment>
+                ),
+              }}
+              variants={itemVariants}
             />
 
             {!isLogin && (
-              <TextField
+              <MotionTextField
                 label="Display Name"
                 type="text"
                 fullWidth
-                margin="normal"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 disabled={status === "loading"}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <UserRound size={18} />
+                    </InputAdornment>
+                  ),
+                }}
+                variants={itemVariants}
               />
             )}
 
-            <TextField
+            <MotionTextField
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               fullWidth
-              margin="normal"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onBlur={() => validatePassword(password)}
@@ -159,14 +233,32 @@ const LoginForm: React.FC = () => {
               helperText={passwordError}
               disabled={status === "loading"}
               required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock size={18} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={togglePasswordVisibility}
+                      edge="end"
+                      size="small"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              variants={itemVariants}
             />
 
             {!isLogin && (
-              <TextField
+              <MotionTextField
                 label="Confirm Password"
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 fullWidth
-                margin="normal"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 onBlur={() =>
@@ -176,16 +268,42 @@ const LoginForm: React.FC = () => {
                 helperText={confirmPasswordError}
                 disabled={status === "loading"}
                 required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock size={18} />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={toggleConfirmPasswordVisibility}
+                        edge="end"
+                        size="small"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                variants={itemVariants}
               />
             )}
 
-            <Button
+            <MotionButton
               type="submit"
               fullWidth
               variant="contained"
               color="primary"
               disabled={status === "loading"}
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{ mt: 2, mb: 2, py: 1.5 }}
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               {status === "loading" ? (
                 <CircularProgress size={24} color="inherit" />
@@ -194,20 +312,41 @@ const LoginForm: React.FC = () => {
               ) : (
                 "Create Account"
               )}
-            </Button>
+            </MotionButton>
 
-            <Box sx={{ textAlign: "center", mt: 2 }}>
-              <Typography variant="body2">
-                {isLogin
-                  ? "Don't have an account?"
-                  : "Already have an account?"}
-                <Button onClick={toggleAuthMode} color="primary" sx={{ ml: 1 }}>
+            <Box sx={{ position: "relative", my: 2 }}>
+              <Divider sx={{ my: 2 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ px: 1 }}
+                >
+                  OR
+                </Typography>
+              </Divider>
+            </Box>
+
+            <Box sx={{ textAlign: "center" }}>
+              <motion.div variants={itemVariants}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {isLogin
+                    ? "Don't have an account?"
+                    : "Already have an account?"}
+                </Typography>
+                <MotionButton
+                  onClick={toggleAuthMode}
+                  color="secondary"
+                  variant="text"
+                  sx={{ mt: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   {isLogin ? "Sign Up" : "Sign In"}
-                </Button>
-              </Typography>
+                </MotionButton>
+              </motion.div>
             </Box>
           </Box>
-        </Paper>
+        </MotionPaper>
       </Grid>
     </Grid>
   );
