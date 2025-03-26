@@ -36,9 +36,10 @@ export default function RootLayout({
           <StoreProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              <FirebaseAuthListener />
-              <Toaster />
-              <AnimatePresence mode="wait">{children}</AnimatePresence>
+              <FirebaseAuthListener>
+                <Toaster />
+                <AnimatePresence mode="wait">{children}</AnimatePresence>
+              </FirebaseAuthListener>
             </ThemeProvider>
           </StoreProvider>
         </CacheProvider>

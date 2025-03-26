@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import { useDispatch } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
@@ -8,7 +8,13 @@ import { setUser } from "../store/authSlice";
 import { fetchUserData } from "../store/userSlice";
 import { AppDispatch } from "../store/store";
 
-export default function FirebaseAuthListener() {
+interface FirebaseAuthListenerProps {
+  children: ReactNode;
+}
+
+export default function FirebaseAuthListener({
+  children,
+}: FirebaseAuthListenerProps) {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -26,5 +32,5 @@ export default function FirebaseAuthListener() {
     return () => unsubscribe();
   }, [dispatch]);
 
-  return null;
+  return <>{children}</>;
 }
