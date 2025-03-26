@@ -1,43 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import "./globals.css";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Inter } from "next/font/google";
+import FirebaseAuthListener from "./FirebaseAuthListener";
+import { StoreProvider } from "../store/StoreProvider";
+import { CacheProvider } from "@emotion/react";
+import { AnimatePresence } from "framer-motion";
+import createEmotionCache from "../utils/createEmotionCache";
 import theme from "../theme";
-import { Providers } from "../store/Providers";
-import { setupEmulators } from "../utils/emulatorSetup";
+import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// Client-side cache, shared for the whole session of the user
+const clientSideEmotionCache = createEmotionCache();
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-
-    // Setup Firebase emulators if enabled
-    setupEmulators();
-  }, []);
-
+}) {
   return (
     <html lang="en">
-      <body className={inter.className} suppressHydrationWarning>
-        <Providers>
-          {isMounted ? (
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        />
+        <title>Buddy Connect</title>
+        <meta name="description" content="Connect with your buddies" />
+      </head>
+      <body suppressHydrationWarning>
+        <CacheProvider value={clientSideEmotionCache}>
+          <StoreProvider>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              {children}
+              <FirebaseAuthListener />
+              <AnimatePresence mode="wait">{children}</AnimatePresence>
             </ThemeProvider>
-          ) : (
-            <div style={{ visibility: "hidden" }}>{children}</div>
-          )}
-        </Providers>
+          </StoreProvider>
+        </CacheProvider>
       </body>
     </html>
   );
