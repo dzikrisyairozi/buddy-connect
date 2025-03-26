@@ -16,6 +16,23 @@ This Turborepo includes the following packages/apps:
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
+### Development Tools
+
+This monorepo comes fully configured with the following development tools:
+
+- **Linting**: ESLint is configured for all packages with appropriate presets
+- **Formatting**: Prettier with automatic code formatting and Tailwind CSS class sorting
+- **Git Hooks**: Husky pre-commit hooks for running lint-staged on changed files
+- **Commit Linting**: Commitlint enforces conventional commit messages
+- **Continuous Integration**: GitHub Actions workflows for linting, type checking, and building on the main branch
+
+These tools work together to ensure code quality and consistency across the entire codebase. When you commit code:
+
+1. Lint-staged formats and lints only the files you've changed
+2. Commitlint ensures your commit messages follow the conventional format
+3. Pre-push hooks run all checks before pushing to remote
+4. CI validates everything when you push to the main branch
+
 ### Utilities
 
 This Turborepo has some additional tools already setup for you:
@@ -44,6 +61,23 @@ This will start:
 
 - Frontend on http://localhost:3000
 - Backend on http://localhost:5000
+
+### Quality Checks
+
+You can run the following commands to check your code:
+
+```
+# Run all checks (type checking, linting, and format checking)
+pnpm check-all
+
+# Run individual checks
+pnpm type:check
+pnpm lint
+pnpm format:check
+
+# Format all files
+pnpm format
+```
 
 ### Remote Caching
 
