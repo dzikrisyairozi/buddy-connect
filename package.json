@@ -6,11 +6,16 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "clean": "turbo run clean && rd /s /q node_modules 2>nul || true",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@types/node": "^20.10.6",
+    "husky": "^9.1.7",
     "prettier": "^3.1.0",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "rimraf": "^5.0.1",
     "turbo": "latest"
   },
@@ -20,7 +25,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "framer-motion": "^12.6.0",
-    "prettier-plugin-tailwindcss": "^0.6.11"
+    "framer-motion": "^12.6.0"
   }
 }
